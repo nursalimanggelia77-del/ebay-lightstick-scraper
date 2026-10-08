@@ -2,20 +2,22 @@ name: Scheduled eBay Scraper
 
 on:
   schedule:
-    # 00:00 UTC = Jam 09:00 WIB / KST
-    # Berjalan otomatis Senin - Jumat (1-5)
+    # 00:00 UTC = Jam 09:00 WIB / KST (Senin - Jumat)
     - cron: '0 0 * * 1-5'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -29,8 +31,8 @@ jobs:
 
       - name: Commit and Push Updated Excel Data
         run: |
-          git config --global user.name "GitHub Action Scraper"
-          git config --global user.email "action@github.com"
-          git add DATA_ebay_lightstick_RAW_ONLY.xlsx
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add DATA_ebay_lightstick_RAW_ONLY.xlsx || true
           git commit -m "Auto-update ebay raw data on $(date +'%Y-%m-%d %H:%M:%S')" || exit 0
           git push
